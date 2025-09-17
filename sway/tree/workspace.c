@@ -545,9 +545,11 @@ static struct sway_workspace *workspace_output_prev_next_impl(
 		return NULL;
 	}
 
-	int index = list_find(output->workspaces, workspace);
-	size_t new_index = wrap(index + dir, output->workspaces->length);
-	return output->workspaces->items[new_index];
+	int index = list_find(output->workspaces, workspace) + dir;
+	if (index > -1 && index < output->workspaces->length) {
+		return output->workspaces->items[index];
+	}
+	return NULL;
 }
 
 
