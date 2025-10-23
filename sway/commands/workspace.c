@@ -210,7 +210,8 @@ struct cmd_results *cmd_workspace(int argc, char **argv) {
 				strcasecmp(argv[0], "prev") == 0 ||
 				strcasecmp(argv[0], "next_on_output") == 0 ||
 				strcasecmp(argv[0], "prev_on_output") == 0 ||
-				strcasecmp(argv[0], "current") == 0) {
+				strcasecmp(argv[0], "current") == 0 ||
+				strcasecmp(argv[0], "next_number") == 0) {
 			ws = workspace_by_name(argv[0]);
 		} else if (strcasecmp(argv[0], "back_and_forth") == 0) {
 			if (!seat->prev_workspace_name) {

@@ -68,6 +68,8 @@ void workspace_consider_destroy(struct sway_workspace *ws);
 
 char *workspace_next_name(const char *output_name);
 
+char *workspace_next_number(void);
+
 struct sway_workspace *workspace_auto_back_and_forth(
 		struct sway_workspace *workspace);
 

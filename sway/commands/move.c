@@ -455,7 +455,8 @@ static struct cmd_results *cmd_move_container(bool no_auto_back_and_forth,
 				strcasecmp(argv[1], "prev") == 0 ||
 				strcasecmp(argv[1], "next_on_output") == 0 ||
 				strcasecmp(argv[1], "prev_on_output") == 0 ||
-				strcasecmp(argv[1], "current") == 0) {
+				strcasecmp(argv[1], "current") == 0 ||
+				strcasecmp(argv[1], "next_number") == 0){
 			ws = workspace_by_name(argv[1]);
 		} else if (strcasecmp(argv[1], "back_and_forth") == 0) {
 			if (!(ws = workspace_by_name(argv[1]))) {
@@ -983,7 +984,7 @@ static struct cmd_results *cmd_move_to_scratchpad(void) {
 static const char expected_full_syntax[] = "Expected "
 	"'move left|right|up|down [<amount> [px]]'"
 	" or 'move [--no-auto-back-and-forth] [window|container] [to] workspace"
-	"  <name>|next|prev|next_on_output|prev_on_output|current|(number <num>)'"
+	"  <name>|next|prev|next_on_output|prev_on_output|current|next_number|(number <num>)'"
 	" or 'move [window|container] [to] output <name/id>|left|right|up|down'"
 	" or 'move [window|container] [to] mark <mark>'"
 	" or 'move [window|container] [to] scratchpad'"

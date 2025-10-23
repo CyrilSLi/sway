@@ -239,7 +239,8 @@ static void workspace_name_from_binding(const struct sway_binding * binding,
 				strcmp(_target, "prev_on_output") == 0 ||
 				strcmp(_target, "number") == 0 ||
 				strcmp(_target, "back_and_forth") == 0 ||
-				strcmp(_target, "current") == 0) {
+				strcmp(_target, "current") == 0 ||
+				strcmp(_target, "next_number") == 0){
 			free(_target);
 			free(dup);
 			return;
@@ -335,6 +336,11 @@ char *workspace_next_name(const char *output_name) {
 		return target;
 	}
 	// As a fall back, use the next available number
+	return workspace_next_number();
+}
+
+char *workspace_next_number(void) {
+	// Find the next available workspace number
 	char name[12] = "";
 	unsigned int ws_num = 1;
 	do {
@@ -376,6 +382,8 @@ struct sway_workspace *workspace_by_name(const char *name) {
 		return workspace_output_next(current);
 	} else if (strcmp(name, "current") == 0) {
 		return current;
+	} else if (strcmp(name, "next_number") == 0) {
+		return workspace_create(NULL, workspace_next_number());
 	} else if (strcasecmp(name, "back_and_forth") == 0) {
 		struct sway_seat *seat = input_manager_current_seat();
 		if (!seat->prev_workspace_name) {
