@@ -190,10 +190,9 @@ void workspace_consider_destroy(struct sway_workspace *ws) {
 	workspace_begin_destroy(ws);
 }
 
-static bool workspace_valid_on_output(const char *output_name,
+static bool workspace_valid_on_output_struct(struct sway_output *output,
 		const char *ws_name) {
 	struct workspace_config *wsc = workspace_find_config(ws_name);
-	struct sway_output *output = output_by_name_or_id(output_name);
 	if (!output) {
 		return false;
 	}
@@ -208,6 +207,12 @@ static bool workspace_valid_on_output(const char *output_name,
 	}
 
 	return false;
+}
+
+static bool workspace_valid_on_output(const char *output_name,
+		const char *ws_name) {
+	struct sway_output *output = output_by_name_or_id(output_name);
+	return workspace_valid_on_output_struct(output, ws_name);
 }
 
 static void workspace_name_from_binding(const struct sway_binding * binding,
@@ -341,11 +346,19 @@ char *workspace_next_name(const char *output_name) {
 
 char *workspace_next_number(void) {
 	// Find the next available workspace number
+	struct sway_seat *seat = input_manager_current_seat();
+	struct sway_workspace *active_ws = seat_get_focused_workspace(seat);
+	struct sway_output *output = NULL;
+	if (active_ws) {
+		output = active_ws->output;
+	}
 	char name[12] = "";
 	unsigned int ws_num = 1;
 	do {
 		snprintf(name, sizeof(name), "%u", ws_num++);
-	} while (workspace_by_number(name));
+	} while (
+		workspace_by_number(name) || 
+		(active_ws && !workspace_valid_on_output_struct(output, name)));
 	return strdup(name);
 }
 
