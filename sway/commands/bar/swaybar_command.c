@@ -4,6 +4,8 @@
 #include "stringop.h"
 
 struct cmd_results *bar_cmd_swaybar_command(int argc, char **argv) {
+	return cmd_results_new(CMD_SUCCESS, NULL); // Disable swaybar_command (personal preference)
+
 	struct cmd_results *error = NULL;
 	if ((error = checkarg(argc, "swaybar_command", EXPECTED_AT_LEAST, 1))) {
 		return error;
