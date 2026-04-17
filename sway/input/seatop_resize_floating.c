@@ -152,12 +152,13 @@ static void handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
 			relative_grow_y = ws->y - con->pending.y;
 			relative_grow_x = e->preserve_ratio ? relative_grow_y
 					* e->ref_width / e->ref_height : 0;
-			relative_grow_width = relative_grow_height = 0;
+			relative_grow_width = relative_grow_height = 0; // Same as above
 		}
 		if (con_right + relative_grow_width > ws_right) { // Right edge
 			relative_grow_width = ws_right - con_right;
 			relative_grow_height = e->preserve_ratio ? relative_grow_width
 					* e->ref_height / e->ref_width : 0;
+			// Hack to allow enlarging right-anchored windows to the left
 			if (relative_grow_x == 0) {
 				relative_grow_y = 0;
 			}
@@ -166,10 +167,10 @@ static void handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
 			relative_grow_height = ws_bottom - con_bottom;
 			relative_grow_width = e->preserve_ratio ? relative_grow_height
 					* e->ref_width / e->ref_height : 0;
+			// Hack to allow enlarging bottom-anchored windows upwards
 			if (relative_grow_y == 0) {
 				relative_grow_x = 0;
 			}
-			
 		}
 	}
 
