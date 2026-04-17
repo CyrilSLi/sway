@@ -13,6 +13,7 @@ struct seatop_resize_floating_event {
 	struct sway_container *con;
 	enum wlr_edges edge;
 	bool preserve_ratio;
+	bool workspace_bounded;
 	double ref_lx, ref_ly;         // cursor's x/y at start of op
 	double ref_width, ref_height;  // container's size at start of op
 	double ref_con_lx, ref_con_ly; // container's x/y at start of op
@@ -130,6 +131,48 @@ static void handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
 	int relative_grow_x = (e->ref_con_lx + grow_x) - con->pending.x;
 	int relative_grow_y = (e->ref_con_ly + grow_y) - con->pending.y;
 
+	// Stop the container from growing outside of its workspace if
+	// workspace_bounded is set
+	if (e->workspace_bounded && con->pending.workspace) {
+		struct sway_workspace *ws = con->pending.workspace;
+		int ws_right = ws->x + ws->width;
+		int ws_bottom = ws->y + ws->height;
+		double con_right = con->pending.x + con->pending.width;
+		double con_bottom = con->pending.y + con->pending.height;
+
+		if (con->pending.x + relative_grow_x < ws->x) { // Left edge
+			relative_grow_x = ws->x - con->pending.x;
+			relative_grow_y = e->preserve_ratio ? relative_grow_x
+					* e->ref_height / e->ref_width : 0;
+			// Prevent growing in other directions when the container is
+			// anchored to the left edge
+			relative_grow_width = relative_grow_height = 0;
+		}
+		if (con->pending.y + relative_grow_y < ws->y) { // Top edge
+			relative_grow_y = ws->y - con->pending.y;
+			relative_grow_x = e->preserve_ratio ? relative_grow_y
+					* e->ref_width / e->ref_height : 0;
+			relative_grow_width = relative_grow_height = 0;
+		}
+		if (con_right + relative_grow_width > ws_right) { // Right edge
+			relative_grow_width = ws_right - con_right;
+			relative_grow_height = e->preserve_ratio ? relative_grow_width
+					* e->ref_height / e->ref_width : 0;
+			if (relative_grow_x == 0) {
+				relative_grow_y = 0;
+			}
+		}
+		if (con_bottom + relative_grow_height > ws_bottom) { // Bottom edge
+			relative_grow_height = ws_bottom - con_bottom;
+			relative_grow_width = e->preserve_ratio ? relative_grow_height
+					* e->ref_width / e->ref_height : 0;
+			if (relative_grow_y == 0) {
+				relative_grow_x = 0;
+			}
+			
+		}
+	}
+
 	// Actually resize stuff
 	con->pending.x += relative_grow_x;
 	con->pending.y += relative_grow_y;
@@ -172,6 +215,8 @@ void seatop_begin_resize_floating(struct sway_seat *seat,
 	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat->wlr_seat);
 	e->preserve_ratio = keyboard &&
 		(wlr_keyboard_get_modifiers(keyboard) & WLR_MODIFIER_SHIFT);
+	e->workspace_bounded = keyboard &&
+		(wlr_keyboard_get_modifiers(keyboard) & WLR_MODIFIER_CTRL);
 
 	e->edge = edge == WLR_EDGE_NONE ? WLR_EDGE_BOTTOM | WLR_EDGE_RIGHT : edge;
 	e->ref_lx = seat->cursor->cursor->x;

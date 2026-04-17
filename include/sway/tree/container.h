@@ -248,6 +248,13 @@ void container_floating_move_to(struct sway_container *con,
  */
 void container_floating_move_to_center(struct sway_container *con);
 
+/**
+ * Move a floating container to a new layout-local position, bounded by the
+ * boundaries of its workspace.
+ */
+void container_floating_move_to_bounded(struct sway_container *con,
+        double lx, double ly);
+
 bool container_has_urgent_child(struct sway_container *container);
 
 /**

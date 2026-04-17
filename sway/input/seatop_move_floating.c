@@ -37,7 +37,13 @@ static void handle_tablet_tool_tip(struct sway_seat *seat,
 static void handle_pointer_motion(struct sway_seat *seat, uint32_t time_msec) {
 	struct seatop_move_floating_event *e = seat->seatop_data;
 	struct wlr_cursor *cursor = seat->cursor->cursor;
-	container_floating_move_to(e->con, cursor->x - e->dx, cursor->y - e->dy);
+
+	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat->wlr_seat);
+	if (keyboard && (wlr_keyboard_get_modifiers(keyboard) & WLR_MODIFIER_CTRL)) {
+		container_floating_move_to_bounded(e->con, cursor->x - e->dx, cursor->y - e->dy);
+	} else {
+		container_floating_move_to(e->con, cursor->x - e->dx, cursor->y - e->dy);
+	}
 	transaction_commit_dirty();
 }
 

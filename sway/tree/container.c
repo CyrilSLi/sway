@@ -1221,6 +1221,18 @@ void container_floating_move_to_center(struct sway_container *con) {
 	container_floating_translate(con, new_lx - con->pending.x, new_ly - con->pending.y);
 }
 
+void container_floating_move_to_bounded(struct sway_container *con,
+        double lx, double ly) {
+    if (!sway_assert(container_is_floating(con),
+            "Expected a floating container")) {
+        return;
+    }
+    struct sway_workspace *ws = con->pending.workspace;
+	double clamped_lx = fmax(ws->x, fmin(lx, ws->x + ws->width - con->pending.width));
+	double clamped_ly = fmax(ws->y, fmin(ly, ws->y + ws->height - con->pending.height));
+	container_floating_move_to(con, clamped_lx, clamped_ly);
+}
+
 static bool find_urgent_iterator(struct sway_container *con, void *data) {
 	return con->view && view_is_urgent(con->view);
 }
