@@ -62,11 +62,11 @@ static struct sway_output *output_in_direction(const char *direction_string,
 				root->output_layout, direction, reference->wlr_output,
 				ref_lx, ref_ly);
 
-		if (!target) {
+		/* if (!target) {
 			target = wlr_output_layout_farthest_output(
 					root->output_layout, opposite_direction(direction),
 					reference->wlr_output, ref_lx, ref_ly);
-		}
+		} */
 
 		if (target) {
 			return target->data;

@@ -315,7 +315,7 @@ static struct cmd_results *focus_output(struct sway_seat *seat,
 		}
 		output = output_get_in_direction(ws->output, direction);
 
-		if (!output) {
+		/* if (!output) {
 			int center_lx = ws->output->lx + ws->output->width / 2;
 			int center_ly = ws->output->ly + ws->output->height / 2;
 			struct wlr_output *target = wlr_output_layout_farthest_output(
@@ -324,7 +324,7 @@ static struct cmd_results *focus_output(struct sway_seat *seat,
 			if (target) {
 				output = output_from_wlr_output(target);
 			}
-		}
+		} */
 	}
 
 	free(identifier);
